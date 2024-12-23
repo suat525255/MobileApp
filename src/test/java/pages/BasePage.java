@@ -13,8 +13,6 @@ import java.time.Duration;
 public abstract class BasePage {
 
 
-    @AndroidFindBy(xpath = "//*[@text='Üye Olmadan Devam Et']" )
-    public WebElement xxxx;
 
     public BasePage(AppiumDriver driver) {
         PageFactory.initElements(new AppiumFieldDecorator(driver, Duration.ofSeconds(10)), this);
