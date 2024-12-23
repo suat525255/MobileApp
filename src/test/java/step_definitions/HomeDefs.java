@@ -12,7 +12,7 @@ public class HomeDefs {
 
     @Given("click {string} button")
     public void clickButton(String text) {
-        MobileUtils.waitFor(8);
+        MobileUtils.waitForVisibility(homePage.guestButton,8);
         homePage.clickText(text);
     }
 

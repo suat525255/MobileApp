@@ -1,6 +1,10 @@
 package utilities;
 
 
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.TouchAction;
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Rectangle;
@@ -46,48 +50,69 @@ public class MobileUtils {
 
         swipe.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, startY));
         swipe.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-
         swipe.addAction(finger.createPointerMove(Duration.ofMillis(1500), PointerInput.Origin.viewport(), startX, endY));
         swipe.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         Driver.getDriver().perform(Collections.singletonList(swipe));
     }
 
-
-    public static void scrollToElementAndStop(int targetCount) {
-        Set<String> seenNames = new HashSet<>();
+    public static List<String[]> saveElementData(int targetCount) {
+        List<String[]> elementData = new ArrayList<>();
 
         int count = 0;
-
         boolean targetFound = false;
+
         while (!targetFound) {
             List<WebElement> visibleElements = Driver.getDriver().findElements(By.id("name"));
+            List<WebElement> visiblePrices = Driver.getDriver().findElements(By.id("price"));
 
-            for (WebElement element : visibleElements) {
-                String name = element.getText().trim();
+            for (int i = 0; i < visibleElements.size(); i++) {
+                String name = visibleElements.get(i).getText().trim();
+                String price = (i < visiblePrices.size()) ? visiblePrices.get(i).getText().trim() : "Fiyat Yok";
 
-                if (!seenNames.contains(name)) {
-                    seenNames.add(name);
+                boolean isAlreadyAdded = elementData.stream().anyMatch(data -> data[0].equals(name));
+                if (!isAlreadyAdded) {
+                    elementData.add(new String[]{name, price});
                     count++;
-                    System.out.println("name = " + name);
 
-                    if (seenNames.size()==targetCount) {
-                        System.out.println("Hedef öğe bulundu: " + name);
-                        System.out.println("Toplam öğe sayısı: " + count);
+                    if (elementData.size() == targetCount) {
                         targetFound = true;
-                        Driver.getDriver().findElement(By.xpath("//*[@text='" + name + "']")).click();
                         break;
                     }
                 }
             }
 
             if (!targetFound) {
-              MobileUtils.scrollHalfScreenDOWN();
+                MobileUtils.scrollHalfScreenDOWN();
             }
+            //If there are not enough products for the specified number of elements, do not enter an infinite loop.
+            if (count==15) break;
+
         }
+
+        return elementData;
     }
 
-    public static void scrollHalfScreenDOWN() {
+    public static void scrollFullScreenUP() {
+            Dimension size = Driver.getDriver().manage().window().getSize();
+            int startX = size.width / 2;
+            int startY = (int) (size.height * 0.2); // Yukarıdan başlar
+            int endY = (int) (size.height * 0.8);   // Aşağıya doğru gider
+
+            PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+            Sequence scroll = new Sequence(finger, 0);
+
+            scroll.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, startY));
+            scroll.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            scroll.addAction(finger.createPointerMove(Duration.ofMillis(1000), PointerInput.Origin.viewport(), startX, endY));
+            scroll.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+            Driver.getDriver().perform(Collections.singletonList(scroll));
+        }
+
+
+
+        public static void scrollHalfScreenDOWN() {
         Dimension size = Driver.getDriver().manage().window().getSize();
         int startX = size.width / 2;
         int startY = (int) (size.height * 0.8);
@@ -98,7 +123,7 @@ public class MobileUtils {
 
         scroll.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, startY));
         scroll.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-        scroll.addAction(finger.createPointerMove(Duration.ofMillis(1000), PointerInput.Origin.viewport(), startX, endY));
+        scroll.addAction(finger.createPointerMove(Duration.ofMillis(1500), PointerInput.Origin.viewport(), startX, endY));
         scroll.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         Driver.getDriver().perform(Collections.singletonList(scroll));

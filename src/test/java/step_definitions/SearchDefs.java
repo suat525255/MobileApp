@@ -5,6 +5,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import pages.SearchPage;
 import utilities.Driver;
+import utilities.MobileUtils;
 
 public class SearchDefs {
 
@@ -45,4 +46,14 @@ public class SearchDefs {
         searchPage.verifyOpenProductDetailPage();
     }
 
+    @Then("verify price sort {string}")
+    public void verifyPriceSort(String sortType) {
+        searchPage.verifySortPrice(sortType);
+        MobileUtils.waitFor(1);
+        MobileUtils.scrollFullScreenUP();
+        MobileUtils.waitFor(3);
+        MobileUtils.scrollFullScreenUP();
+        MobileUtils.waitFor(1);
+
+    }
 }

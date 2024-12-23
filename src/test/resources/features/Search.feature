@@ -11,6 +11,7 @@ Feature:Search in mobilApp
     And select filter "Bilgisayar, Donanım"
     And click filter apply button
     And sort "En Yüksek Fiyat"
+    Then verify price sort "En Yüksek Fiyat"
     And select product index 10
     And click product Detail
     Then verify open product detail page

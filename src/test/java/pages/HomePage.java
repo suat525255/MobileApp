@@ -11,6 +11,8 @@ import utilities.MobileUtils;
 
 public class HomePage extends BasePage{
 
+    @AndroidFindBy(xpath = "//*[@text='Üye Olmadan Devam Et']" )
+    public WebElement guestButton;
 
     @AndroidFindBy(id = "searchTextView" )
     public WebElement searchBox;
